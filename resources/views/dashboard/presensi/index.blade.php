@@ -73,11 +73,11 @@
             let marker = L.marker([latitude, longitude]).addTo(map);
             marker.bindPopup("<b>Anda berada di sini</b>").openPopup();
 
-            let circle = L.circle([latitude, longitude], {
+            let circle = L.circle([-7.313151173243561, 112.72715491471567], {
                 color: 'red',
                 fillColor: '#f03',
                 fillOpacity: 0.5,
-                radius: 20
+                radius: 33
             }).addTo(map);
         }
 
@@ -87,6 +87,7 @@
 
         let notifikasi_presensi_masuk = document.getElementById('notifikasi_presensi_masuk');
         let notifikasi_presensi_keluar = document.getElementById('notifikasi_presensi_keluar');
+        let notifikasi_presensi_gagal_radius = document.getElementById('notifikasi_presensi_gagal_radius');
         $("#take-presensi").click(function() {
             Webcam.snap(function(uri) {
                 image = uri;
@@ -117,6 +118,9 @@
                         setTimeout("location.href='{{ route("karyawan.dashboard") }}'", 5000);
 
                     } else if (res.status == 500) {
+                        if (res.jenis_error == "radius") {
+                            notifikasi_presensi_gagal_radius.play();
+                        }
                         Swal.fire({
                             title: "Presensi",
                             text: res.message,
@@ -137,6 +141,9 @@
         </audio>
         <audio id="notifikasi_presensi_keluar">
             <source src="{{ asset("audio/notifikasi_presensi_keluar.mp3") }}" type="audio/mpeg">
+        </audio>
+        <audio id="notifikasi_presensi_gagal_radius">
+            <source src="{{ asset("audio/notifikasi_presensi_gagal_radius.mp3") }}" type="audio/mpeg">
         </audio>
         <div class="-mx-3 flex flex-wrap">
             <div class="mb-6 w-full max-w-full px-3 sm:flex-none">
