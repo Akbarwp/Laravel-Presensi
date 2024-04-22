@@ -16,10 +16,11 @@ return new class extends Migration
             $table->string('nik');
             $table->date('tanggal_presensi');
             $table->time('jam_masuk');
-            $table->time('jam_keluar');
+            $table->time('jam_keluar')->nullable();
             $table->string('foto_masuk');
-            $table->string('foto_keluar');
-            $table->string('lokasi');
+            $table->string('foto_keluar')->nullable();
+            $table->string('lokasi_masuk');
+            $table->string('lokasi_keluar')->nullable();
             $table->foreign('nik')->references('nik')->on('karyawan');
             $table->timestamps();
         });

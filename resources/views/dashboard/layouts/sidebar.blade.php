@@ -13,7 +13,7 @@
     <div class="h-sidenav block max-h-screen w-auto grow basis-full items-center overflow-auto">
         <ul class="mb-0 flex flex-col pl-0">
             <li class="mt-0.5 w-full">
-                <a class="py-2.7 ease-nav-brand mx-2 my-0 flex items-center whitespace-nowrap px-4 text-sm transition-colors dark:text-white dark:opacity-80 {{ Request::routeIs(['dashboard']) ? 'rounded-lg font text-slate-700 bg-blue-500/13' : '' }}" href="{{ route('dashboard') }}">
+                <a class="py-2.7 ease-nav-brand mx-2 my-0 flex items-center whitespace-nowrap px-4 text-sm transition-colors dark:text-white dark:opacity-80 {{ Request::routeIs(['karyawan.dashboard']) ? 'rounded-lg font text-slate-700 bg-blue-500/13' : '' }}" href="{{ route('karyawan.dashboard') }}">
                     <div class="mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-center stroke-0 text-center xl:p-2.5">
                         <i class="ri-tv-2-line relative top-0 text-lg leading-normal text-blue-500"></i>
                     </div>
@@ -22,11 +22,11 @@
             </li>
 
             <li class="mt-0.5 w-full">
-                <a class="py-2.7 ease-nav-brand mx-2 my-0 flex items-center whitespace-nowrap px-4 text-sm transition-colors dark:text-white dark:opacity-80" href="./pages/tables.html">
+                <a class="py-2.7 ease-nav-brand mx-2 my-0 flex items-center whitespace-nowrap px-4 text-sm transition-colors dark:text-white dark:opacity-80 {{ Request::routeIs(['karyawan.presensi']) ? 'rounded-lg font text-slate-700 bg-blue-500/13' : '' }}" href="{{ route('karyawan.presensi') }}">
                     <div class="mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-center stroke-0 text-center xl:p-2.5">
-                        <i class="ri-calendar-todo-fill relative top-0 text-lg leading-normal text-orange-500"></i>
+                        <i class="ri-camera-fill relative top-0 text-lg leading-normal text-purple-500"></i>
                     </div>
-                    <span class="ease pointer-events-none ml-1 opacity-100 duration-300">Tables</span>
+                    <span class="ease pointer-events-none ml-1 opacity-100 duration-300">Presensi</span>
                 </a>
             </li>
 

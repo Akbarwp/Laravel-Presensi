@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthKaryawanController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PresensiController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -32,8 +33,14 @@ Route::group([
     'middleware' => ['karyawan'],
 ], function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('karyawan.dashboard');
-
     Route::post('/logout', [AuthKaryawanController::class, 'destroy'])->name('logout.auth');
+
+    Route::group([
+        'prefix' => 'presensi',
+    ], function () {
+        Route::get('/', [PresensiController::class, 'index'])->name('karyawan.presensi');
+        Route::post('/', [PresensiController::class, 'store'])->name('karyawan.presensi.store');
+    });
 });
 
 require __DIR__.'/auth.php';
