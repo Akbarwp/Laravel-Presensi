@@ -85,6 +85,8 @@
             //
         }
 
+        let notifikasi_presensi_masuk = document.getElementById('notifikasi_presensi_masuk');
+        let notifikasi_presensi_keluar = document.getElementById('notifikasi_presensi_keluar');
         $("#take-presensi").click(function() {
             Webcam.snap(function(uri) {
                 image = uri;
@@ -101,13 +103,18 @@
                 cache: false,
                 success: function(res) {
                     if (res.status == 200) {
+                        if (res.jenis_presensi == "masuk") {
+                            notifikasi_presensi_masuk.play();
+                        } else if (res.jenis_presensi == "keluar") {
+                            notifikasi_presensi_keluar.play();
+                        }
                         Swal.fire({
                             title: "Presensi",
                             text: res.message,
                             icon: "success",
                             confirmButtonText: "OK"
                         });
-                        setTimeout("location.href='{{ route("karyawan.dashboard") }}'", 2000);
+                        setTimeout("location.href='{{ route("karyawan.dashboard") }}'", 5000);
 
                     } else if (res.status == 500) {
                         Swal.fire({
@@ -125,6 +132,12 @@
 
 @section("container")
     <div>
+        <audio id="notifikasi_presensi_masuk">
+            <source src="{{ asset("audio/notifikasi_presensi_masuk.mp3") }}" type="audio/mpeg">
+        </audio>
+        <audio id="notifikasi_presensi_keluar">
+            <source src="{{ asset("audio/notifikasi_presensi_keluar.mp3") }}" type="audio/mpeg">
+        </audio>
         <div class="-mx-3 flex flex-wrap">
             <div class="mb-6 w-full max-w-full px-3 sm:flex-none">
                 <div class="dark:bg-slate-850 dark:shadow-dark-xl relative flex min-w-0 flex-col break-words rounded-2xl bg-white bg-clip-border shadow-xl">

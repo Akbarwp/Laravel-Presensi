@@ -78,6 +78,7 @@ class PresensiController extends Controller
             'data' => $data,
             'success' => true,
             'message' => "Berhasil presensi",
+            'jenis_presensi' => $jenisPresensi,
         ]);
     }
 }
