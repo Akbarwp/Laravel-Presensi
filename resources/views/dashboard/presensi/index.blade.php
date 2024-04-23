@@ -159,7 +159,7 @@
                                     Presensi Masuk
                                 </button>
                             @elseif ($presensiKaryawan->jam_keluar != null)
-                                <button id="take-presensi" class="btn btn-disabled btn-ghost btn-wide text-white">
+                                <button id="take-presensi" class="btn btn-disabled btn-ghost btn-wide text-white dark:bg-slate-600/60 dark:text-white">
                                     <i class="ri-camera-line text-lg"></i>
                                     Presensi Selesai
                                 </button>

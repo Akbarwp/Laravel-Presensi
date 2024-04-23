@@ -24,7 +24,7 @@
     </head>
 
     <body class="leading-default m-0 bg-gray-50 font-sans text-base font-normal text-slate-500 antialiased dark:bg-slate-900">
-        <div class="min-h-75 absolute w-full bg-blue-500 dark:hidden bg-y-50 top-0 min-h-75 bg-[url('https://raw.githubusercontent.com/creativetimofficial/public-assets/master/argon-dashboard-pro/assets/img/profile-layout-header.jpg')]">
+        <div class="min-h-75 absolute w-full bg-blue-500 bg-y-50 top-0 min-h-75 bg-[url('https://raw.githubusercontent.com/creativetimofficial/public-assets/master/argon-dashboard-pro/assets/img/profile-layout-header.jpg')] dark:bg-[url('https://raw.githubusercontent.com/creativetimofficial/public-assets/master/argon-dashboard-pro/assets/img/profile-layout-header.jpg')]">
             <span class="absolute top-0 left-0 w-full h-full bg-blue-500 opacity-60"></span>
         </div>
 
