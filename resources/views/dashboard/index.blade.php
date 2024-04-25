@@ -1,10 +1,5 @@
 @extends("dashboard.layouts.main")
 
-@section("js")
-    <script src="{{ asset("js/carousel.js") }}"></script>
-    <script src="{{ asset("js/charts.js") }}"></script>
-@endsection
-
 @section("container")
     <div>
         <!-- row 1 -->

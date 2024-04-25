@@ -49,6 +49,13 @@ Route::group([
         Route::get('/', [KaryawanController::class, 'index'])->name('karyawan.profile');
         Route::post('/update', [KaryawanController::class, 'update'])->name('karyawan.profile.update');
     });
+
+    Route::group([
+        'prefix' => 'history',
+    ], function () {
+        Route::get('/', [PresensiController::class, 'history'])->name('karyawan.history');
+        Route::post('/search-history', [PresensiController::class, 'searchHistory'])->name('karyawan.history.search');
+    });
 });
 
 require __DIR__.'/auth.php';

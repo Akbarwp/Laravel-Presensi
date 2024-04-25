@@ -98,7 +98,7 @@ class PresensiController extends Controller
         ]);
     }
 
-    function validation_radius_presensi($langtitudeKantor, $longtitudeKantor, $langtitudeUser, $longtitudeUser)
+    public function validation_radius_presensi($langtitudeKantor, $longtitudeKantor, $langtitudeUser, $longtitudeUser)
     {
         $theta = $longtitudeKantor - $longtitudeUser;
         $hitungKoordinat = (sin(deg2rad($langtitudeKantor)) * sin(deg2rad($langtitudeUser))) + (cos(deg2rad($langtitudeKantor)) * cos(deg2rad($langtitudeUser)) * cos(deg2rad($theta)));
@@ -110,5 +110,29 @@ class PresensiController extends Controller
         $kilometers = $miles * 1.609344;
         $meters = $kilometers * 1000;
         return $meters;
+    }
+
+    public function history()
+    {
+        $title = 'History Presensi';
+        $riwayatPresensi = DB::table("presensi")
+            ->where('nik', auth()->guard('karyawan')->user()->nik)
+            ->orderBy("tanggal_presensi", "asc")
+            ->paginate(10);
+        $bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+        return view('dashboard.presensi.history', compact('title', 'riwayatPresensi', 'bulan'));
+    }
+
+    public function searchHistory(Request $request)
+    {
+        $bulan = $request->bulan;
+        $tahun = $request->tahun;
+        $data = DB::table('presensi')
+            ->where('nik', auth()->guard('karyawan')->user()->nik)
+            ->whereMonth('tanggal_presensi', $bulan)
+            ->whereYear('tanggal_presensi', $tahun)
+            ->orderBy("tanggal_presensi", "asc")
+            ->get();
+        return view('dashboard.presensi.search-history', compact('data'));
     }
 }

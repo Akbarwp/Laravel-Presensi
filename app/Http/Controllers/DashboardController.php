@@ -22,14 +22,16 @@ class DashboardController extends Controller
 
         $riwayatPresensi = DB::table("presensi")
             ->where('nik', $user->nik)
-            ->whereRaw("MONTH(tanggal_presensi)='" . date('m') . "'")
-            ->whereRaw("YEAR(tanggal_presensi)='" . date('Y') . "'")
+            // Cara 1 mencari tanggal
+            ->whereMonth('tanggal_presensi', date('m'))
+            ->whereYear('tanggal_presensi', date('Y'))
             ->orderBy("tanggal_presensi", "desc")
             ->paginate(10);
 
         $rekapPresensi = DB::table("presensi")
             ->selectRaw("COUNT(nik) as jml_kehadiran, SUM(IF (jam_masuk > '08:00',1,0)) as jml_terlambat")
             ->where('nik', $user->nik)
+            // Cara 2 mencari tanggal
             ->whereRaw("MONTH(tanggal_presensi)='" . date('m') . "'")
             ->whereRaw("YEAR(tanggal_presensi)='" . date('Y') . "'")
             ->first();

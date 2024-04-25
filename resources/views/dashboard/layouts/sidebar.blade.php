@@ -4,7 +4,7 @@
         <a class="m-0 block whitespace-nowrap px-8 py-6 text-sm text-slate-700 dark:text-white" href="https://demos.creative-tim.com/argon-dashboard-tailwind/pages/dashboard.html" target="_blank">
             <img src="{{ asset('img/logo-ct-dark.png') }}" class="ease-nav-brand inline h-full max-h-8 max-w-full transition-all duration-200 dark:hidden" alt="main_logo" />
             <img src="{{ asset('img/logo-ct.png') }}" class="ease-nav-brand hidden h-full max-h-8 max-w-full transition-all duration-200 dark:inline" alt="main_logo" />
-            <span class="ease-nav-brand ml-1 font-semibold transition-all duration-200">Laundry Lurah</span>
+            <span class="ease-nav-brand ml-1 font-semibold transition-all duration-200">Laravel Presensi</span>
         </a>
     </div>
 
@@ -31,11 +31,11 @@
             </li>
 
             <li class="mt-0.5 w-full">
-                <a class="py-2.7 ease-nav-brand mx-2 my-0 flex items-center whitespace-nowrap px-4 text-sm transition-colors dark:text-white dark:opacity-80" href="./pages/billing.html">
-                    <div class="mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-center fill-current stroke-0 text-center xl:p-2.5">
-                        <i class="ri-bank-card-fill relative top-0 text-lg leading-normal text-emerald-500"></i>
+                <a class="py-2.7 ease-nav-brand mx-2 my-0 flex items-center whitespace-nowrap px-4 text-sm transition-colors dark:text-white dark:opacity-80 {{ Request::routeIs(['karyawan.history']) ? 'rounded-lg font text-slate-700 bg-blue-500/13' : '' }}" href="{{ route('karyawan.history') }}">
+                    <div class="mr-2 flex h-8 w-8 items-center justify-center rounded-lg bg-center stroke-0 text-center xl:p-2.5">
+                        <i class="ri-history-fill relative top-0 text-lg leading-normal text-gray-500"></i>
                     </div>
-                    <span class="ease pointer-events-none ml-1 opacity-100 duration-300">Billing</span>
+                    <span class="ease pointer-events-none ml-1 opacity-100 duration-300">History</span>
                 </a>
             </li>
 
