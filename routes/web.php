@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthKaryawanController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\PresensiController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -40,6 +41,13 @@ Route::group([
     ], function () {
         Route::get('/', [PresensiController::class, 'index'])->name('karyawan.presensi');
         Route::post('/', [PresensiController::class, 'store'])->name('karyawan.presensi.store');
+    });
+
+    Route::group([
+        'prefix' => 'profile',
+    ], function () {
+        Route::get('/', [KaryawanController::class, 'index'])->name('karyawan.profile');
+        Route::post('/update', [KaryawanController::class, 'update'])->name('karyawan.profile.update');
     });
 });
 

@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('karyawan', function (Blueprint $table) {
             $table->string('nik')->primary();
             $table->string('nama_lengkap');
+            $table->string('foto')->nullable();
             $table->string('jabatan');
             $table->string('telepon');
             $table->string('email')->unique();
