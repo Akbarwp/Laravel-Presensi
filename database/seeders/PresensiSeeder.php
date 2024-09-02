@@ -16,7 +16,7 @@ class PresensiSeeder extends Seeder
         for ($i = 1; $i <= 30; $i++) {
             DB::table('presensi')->insert([
                 "nik" => "12345",
-                "tanggal_presensi" => date_create("2024-04-" . $i)->format("Y-m-d"),
+                "tanggal_presensi" => date_create("2024-".Date::now()->format('m')."-" . $i)->format("Y-m-d"),
                 "jam_masuk" => date_create("07:" . rand(1,59) . ":" . rand(1,59))->format("H:i:s"),
                 "jam_keluar" => date_create(rand(15,20) . ":" . rand(1,59) . ":" . rand(1,59))->format("H:i:s"),
                 "foto_masuk" => "12345-2024-04-23-masuk.png",

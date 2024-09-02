@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
@@ -36,12 +35,20 @@ class DashboardController extends Controller
             ->whereRaw("YEAR(tanggal_presensi)='" . date('Y') . "'")
             ->first();
 
+        $rekapPengajuanPresensi = DB::table("pengajuan_presensi")
+            ->selectRaw("SUM(IF (status = 'I',1,0)) as jml_izin, SUM(IF (status = 'S',1,0)) as jml_sakit")
+            ->where('nik', $user->nik)
+            ->where('status_approved', 1)
+            ->whereRaw("MONTH(tanggal_pengajuan)='" . date('m') . "'")
+            ->whereRaw("YEAR(tanggal_pengajuan)='" . date('Y') . "'")
+            ->first();
+
         $leaderboard = DB::table("presensi as p")
             ->join('karyawan as k', 'k.nik', '=', 'p.nik')
             ->where('tanggal_presensi', $hariIni)
             ->orderBy('jam_masuk', 'asc')
             ->paginate(10);
 
-        return view("dashboard.index", compact("title", "presensiHariIni", "riwayatPresensi", "rekapPresensi", "leaderboard"));
+        return view("dashboard.index", compact("title", "presensiHariIni", "riwayatPresensi", "rekapPresensi", "rekapPengajuanPresensi", "leaderboard"));
     }
 }

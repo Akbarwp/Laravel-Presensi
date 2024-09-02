@@ -156,7 +156,7 @@
                                         <div class="w-2/3 max-w-full flex-none px-3">
                                             <div>
                                                 <p class="mb-0 font-sans text-sm font-semibold uppercase leading-normal dark:text-white dark:opacity-60">Sakit</p>
-                                                <h5 class="mb-2 font-bold dark:text-white">30</h5>
+                                                <h5 class="mb-2 font-bold dark:text-white">{{ $rekapPengajuanPresensi->jml_sakit }}</h5>
                                             </div>
                                         </div>
                                         <div class="basis-1/3 px-3 text-right">
@@ -177,7 +177,7 @@
                                         <div class="w-2/3 max-w-full flex-none px-3">
                                             <div>
                                                 <p class="mb-0 font-sans text-sm font-semibold uppercase leading-normal dark:text-white dark:opacity-60">Izin</p>
-                                                <h5 class="mb-2 font-bold dark:text-white">30</h5>
+                                                <h5 class="mb-2 font-bold dark:text-white">{{ $rekapPengajuanPresensi->jml_izin }}</h5>
                                             </div>
                                         </div>
                                         <div class="basis-1/3 px-3 text-right">
@@ -198,7 +198,7 @@
                                         <div class="w-2/3 max-w-full flex-none px-3">
                                             <div>
                                                 <p class="mb-0 font-sans text-sm font-semibold uppercase leading-normal dark:text-white dark:opacity-60">Terlambat</p>
-                                                <h5 class="mb-2 font-bold dark:text-white">{{ $rekapPresensi->jml_terlambat }}</h5>
+                                                <h5 class="mb-2 font-bold dark:text-white">{{ $rekapPresensi->jml_terlambat ? $rekapPresensi->jml_terlambat : 0 }}</h5>
                                             </div>
                                         </div>
                                         <div class="basis-1/3 px-3 text-right">

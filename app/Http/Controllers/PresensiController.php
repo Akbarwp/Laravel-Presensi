@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\StatusPengajuanPresensi;
 use Carbon\Carbon;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -114,7 +116,7 @@ class PresensiController extends Controller
 
     public function history()
     {
-        $title = 'History Presensi';
+        $title = 'Riwayat Presensi';
         $riwayatPresensi = DB::table("presensi")
             ->where('nik', auth()->guard('karyawan')->user()->nik)
             ->orderBy("tanggal_presensi", "asc")
@@ -134,5 +136,73 @@ class PresensiController extends Controller
             ->orderBy("tanggal_presensi", "asc")
             ->get();
         return view('dashboard.presensi.search-history', compact('data'));
+    }
+
+    public function pengajuanPresensi()
+    {
+        $title = "Izin Karyawan";
+        $riwayatPengajuanPresensi = DB::table("pengajuan_presensi")
+            ->where('nik', auth()->guard('karyawan')->user()->nik)
+            ->orderBy("tanggal_pengajuan", "asc")
+            ->paginate(10);
+        $bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+        return view('dashboard.presensi.izin.index', compact('title', 'riwayatPengajuanPresensi', 'bulan'));
+    }
+
+    public function pengajuanPresensiCreate()
+    {
+        $title = "Form Pengajuan Presensi";
+        $statusPengajuan = StatusPengajuanPresensi::cases();
+        return view('dashboard.presensi.izin.create', compact('title', 'statusPengajuan'));
+    }
+
+    public function pengajuanPresensiStore(Request $request)
+    {
+        $nik = auth()->guard('karyawan')->user()->nik;
+        $tanggal_pengajuan = $request->tanggal_pengajuan;
+        $status = $request->status;
+        $keterangan = $request->keterangan;
+
+        $cekPengajuan = DB::table('pengajuan_presensi')
+            ->where('nik', auth()->guard('karyawan')->user()->nik)
+            ->whereDate('tanggal_pengajuan', Carbon::make($tanggal_pengajuan)->format('Y-m-d'))
+            ->where(function (Builder $query) {
+                $query->where('status_approved', 0)
+                    ->orWhere('status_approved', 1);
+            })
+            ->first();
+
+        if ($cekPengajuan) {
+            return to_route('karyawan.izin')->with("error", "Anda sudah menambahkan pengajuan pada tanggal " . Carbon::make($tanggal_pengajuan)->format('d-m-Y'));
+        } else {
+            $store = DB::table('pengajuan_presensi')->insert([
+                'nik' => $nik,
+                'tanggal_pengajuan' => $tanggal_pengajuan,
+                'status' => $status,
+                'keterangan' => $keterangan,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ]);
+        }
+
+        if ($store) {
+            return to_route('karyawan.izin')->with("success", "Berhasil menambahkan pengajuan");
+
+        } else {
+            return to_route('karyawan.izin')->with("error", "Gagal menambahkan pengajuan");
+        }
+    }
+
+    public function searchPengajuanHistory(Request $request)
+    {
+        $bulan = $request->bulan;
+        $tahun = $request->tahun;
+        $data = DB::table('pengajuan_presensi')
+            ->where('nik', auth()->guard('karyawan')->user()->nik)
+            ->whereMonth('tanggal_pengajuan', $bulan)
+            ->whereYear('tanggal_pengajuan', $tahun)
+            ->orderBy("tanggal_pengajuan", "asc")
+            ->get();
+        return view('dashboard.presensi.izin.search-history', compact('data'));
     }
 }
