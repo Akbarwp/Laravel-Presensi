@@ -205,4 +205,35 @@ class PresensiController extends Controller
             ->get();
         return view('dashboard.presensi.izin.search-history', compact('data'));
     }
+
+    public function monitoringPresensi(Request $request)
+    {
+        $query = DB::table('presensi as p')
+            ->join('karyawan as k', 'p.nik', '=', 'k.nik')
+            ->join('departemen as d', 'k.departemen_id', '=', 'd.id')
+            ->orderBy('k.nama_lengkap', 'asc')
+            ->orderBy('d.kode', 'asc')
+            ->select('p.*', 'k.nama_lengkap as nama_karyawan', 'd.nama as nama_departemen');
+
+        if ($request->tanggal_presensi) {
+            $query->whereDate('p.tanggal_presensi', $request->tanggal_presensi);
+        } else {
+            $query->whereDate('p.tanggal_presensi', Carbon::now());
+        }
+
+        $monitoring = $query->paginate(10);
+
+        return view('admin.monitoring-presensi.index', compact('monitoring'));
+    }
+
+    public function viewLokasi(Request $request)
+    {
+        if ($request->tipe == "lokasi_masuk") {
+            $data = DB::table('presensi')->where('nik', $request->nik)->first('lokasi_masuk');
+            return $data;
+        } elseif ($request->tipe == "lokasi_keluar") {
+            $data = DB::table('presensi')->where('nik', $request->nik)->first('lokasi_keluar');
+            return $data;
+        }
+    }
 }

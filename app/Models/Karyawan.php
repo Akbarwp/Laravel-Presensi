@@ -16,6 +16,7 @@ class Karyawan extends Authenticatable
 
     protected $fillable = [
         'nik',
+        'departemen_id',
         'nama_lengkap',
         'jabatan',
         'telepon',
@@ -33,5 +34,10 @@ class Karyawan extends Authenticatable
         return [
             'password' => 'hashed',
         ];
+    }
+
+    public function departemen()
+    {
+        return $this->belongsTo(Departemen::class);
     }
 }

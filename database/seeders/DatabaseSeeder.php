@@ -18,10 +18,11 @@ class DatabaseSeeder extends Seeder
         User::create([
             'name' => 'Admin',
             'email' => 'admin@gmail.com',
-            'password' => Hash::make('12345'),
+            'password' => Hash::make('password'),
         ]);
 
         $this->call([
+            DepartemenSeeder::class,
             KaryawanSeeder::class,
             PresensiSeeder::class,
             PengajuanPresensiSeeder::class,

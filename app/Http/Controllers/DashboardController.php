@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Karyawan;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Date;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
@@ -12,7 +13,7 @@ class DashboardController extends Controller
     {
         $title = "Dashboard";
 
-        $hariIni = Date::now()->format("Y-m-d");
+        $hariIni = Carbon::now()->format("Y-m-d");
         $user = Auth::guard('karyawan')->user();
         $presensiHariIni = DB::table("presensi")
             ->where('nik', $user->nik)
@@ -50,5 +51,27 @@ class DashboardController extends Controller
             ->paginate(10);
 
         return view("dashboard.index", compact("title", "presensiHariIni", "riwayatPresensi", "rekapPresensi", "rekapPengajuanPresensi", "leaderboard"));
+    }
+
+    public function indexAdmin()
+    {
+        $title = "Dashboard Admin";
+
+        $hariIni = Carbon::now()->format("Y-m-d");
+
+        $totalKaryawan = Karyawan::count();
+
+        $rekapPresensi = DB::table("presensi")
+            ->selectRaw("COUNT(nik) as jml_kehadiran, SUM(IF (jam_masuk > '08:00',1,0)) as jml_terlambat")
+            ->where('tanggal_presensi', $hariIni)
+            ->first();
+
+        $rekapPengajuanPresensi = DB::table("pengajuan_presensi")
+            ->selectRaw("SUM(IF (status = 'I',1,0)) as jml_izin, SUM(IF (status = 'S',1,0)) as jml_sakit")
+            ->where('status_approved', 1)
+            ->where('tanggal_pengajuan', $hariIni)
+            ->first();
+
+        return view("admin.dashboard", compact("title", "totalKaryawan", "rekapPresensi", "rekapPengajuanPresensi"));
     }
 }

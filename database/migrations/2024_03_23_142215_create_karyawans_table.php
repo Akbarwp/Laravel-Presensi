@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('karyawan', function (Blueprint $table) {
             $table->string('nik')->primary();
+            $table->foreignId('departemen_id')->constrained('departemen', 'id');
             $table->string('nama_lengkap');
             $table->string('foto')->nullable();
             $table->string('jabatan');
