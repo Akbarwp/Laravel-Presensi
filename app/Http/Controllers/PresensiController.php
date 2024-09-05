@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Enums\StatusPengajuanPresensi;
+use App\Models\Karyawan;
+use App\Models\LokasiKantor;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
@@ -14,13 +17,12 @@ class PresensiController extends Controller
     public function index()
     {
         $title = 'Presensi';
-
         $presensiKaryawan = DB::table('presensi')
             ->where('nik', auth()->guard('karyawan')->user()->nik)
             ->where('tanggal_presensi', date('Y-m-d'))
             ->first();
-
-        return view('dashboard.presensi.index', compact('title', 'presensiKaryawan'));
+        $lokasiKantor = LokasiKantor::where('is_used', true)->first();
+        return view('dashboard.presensi.index', compact('title', 'presensiKaryawan', 'lokasiKantor'));
     }
 
     public function store(Request $request)
@@ -34,8 +36,9 @@ class PresensiController extends Controller
         $folderPath = "public/unggah/presensi/";
         $folderName = $nik . "-" . $tglPresensi . "-" . $jenisPresensi;
 
-        $langtitudeKantor = -7.313151173243561;
-        $longtitudeKantor = 112.72715491471567;
+        $lokasiKantor = LokasiKantor::where('is_used', true)->first();
+        $langtitudeKantor = $lokasiKantor->latitude;
+        $longtitudeKantor = $lokasiKantor->longitude;
         $lokasiUser = explode(",", $lokasi);
         $langtitudeUser = $lokasiUser[0];
         $longtitudeUser = $lokasiUser[1];
@@ -223,7 +226,9 @@ class PresensiController extends Controller
 
         $monitoring = $query->paginate(10);
 
-        return view('admin.monitoring-presensi.index', compact('monitoring'));
+        $lokasiKantor = LokasiKantor::where('is_used', true)->first();
+
+        return view('admin.monitoring-presensi.index', compact('monitoring', 'lokasiKantor'));
     }
 
     public function viewLokasi(Request $request)
@@ -235,5 +240,62 @@ class PresensiController extends Controller
             $data = DB::table('presensi')->where('nik', $request->nik)->first('lokasi_keluar');
             return $data;
         }
+    }
+
+    public function laporan(Request $request)
+    {
+        $bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+        $karyawan = Karyawan::orderBy('nama_lengkap', 'asc')->get();
+        return view('admin.laporan.presensi', compact('bulan', 'karyawan'));
+    }
+
+    public function laporanPresensiKaryawan(Request $request)
+    {
+        $title = 'Laporan Presensi Karyawan';
+        $bulan = $request->bulan;
+        $karyawan = Karyawan::query()
+            ->with('departemen')
+            ->where('nik', $request->karyawan)
+            ->first();
+        $riwayatPresensi = DB::table("presensi")
+            ->where('nik', $request->karyawan)
+            ->whereMonth('tanggal_presensi', Carbon::make($bulan)->format('m'))
+            ->whereYear('tanggal_presensi', Carbon::make($bulan)->format('Y'))
+            ->orderBy("tanggal_presensi", "asc")
+            ->get();
+
+        // return view('admin.laporan.pdf.presensi-karyawan', compact('title', 'bulan', 'karyawan', 'riwayatPresensi'));
+        $pdf = Pdf::loadView('admin.laporan.pdf.presensi-karyawan', compact('title', 'bulan', 'karyawan', 'riwayatPresensi'));
+        return $pdf->stream($title . ' ' . $karyawan->nama_lengkap . '.pdf');
+    }
+
+    public function laporanPresensiSemuaKaryawan(Request $request)
+    {
+        $title = 'Laporan Presensi Semua Karyawan';
+        $bulan = $request->bulan;
+        $riwayatPresensi = DB::table("presensi as p")
+            ->join('karyawan as k', 'p.nik', '=', 'k.nik')
+            ->join('departemen as d', 'k.departemen_id', '=', 'd.id')
+            ->whereMonth('tanggal_presensi', Carbon::make($bulan)->format('m'))
+            ->whereYear('tanggal_presensi', Carbon::make($bulan)->format('Y'))
+            ->select(
+                'p.nik',
+                'k.nama_lengkap as nama_karyawan',
+                'k.jabatan as jabatan_karyawan',
+                'd.nama as nama_departemen'
+            )
+            ->selectRaw("COUNT(p.nik) as total_kehadiran, SUM(IF (jam_masuk > '08:00',1,0)) as total_terlambat")
+            ->groupBy(
+                'p.nik',
+                'k.nama_lengkap',
+                'k.jabatan',
+                'd.nama'
+            )
+            ->orderBy("tanggal_presensi", "asc")
+            ->get();
+
+        // return view('admin.laporan.pdf.presensi-semua-karyawan', compact('title', 'bulan', 'riwayatPresensi'));
+        $pdf = Pdf::loadView('admin.laporan.pdf.presensi-semua-karyawan', compact('title', 'bulan', 'riwayatPresensi'));
+        return $pdf->stream($title . '.pdf');
     }
 }

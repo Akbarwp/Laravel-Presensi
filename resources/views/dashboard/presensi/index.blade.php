@@ -73,11 +73,11 @@
             let marker = L.marker([latitude, longitude]).addTo(map);
             marker.bindPopup("<b>Anda berada di sini</b>").openPopup();
 
-            let circle = L.circle([-7.313151173243561, 112.72715491471567], {
+            let circle = L.circle([{{ $lokasiKantor->latitude }}, {{ $lokasiKantor->longitude }}], {
                 color: 'red',
                 fillColor: '#f03',
                 fillOpacity: 0.5,
-                radius: 33
+                radius: {{ $lokasiKantor->radius }}
             }).addTo(map);
         }
 
