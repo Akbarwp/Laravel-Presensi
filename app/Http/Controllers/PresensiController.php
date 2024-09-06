@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\StatusPengajuanPresensi;
+use App\Models\Departemen;
 use App\Models\Karyawan;
 use App\Models\LokasiKantor;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -297,5 +298,80 @@ class PresensiController extends Controller
         // return view('admin.laporan.pdf.presensi-semua-karyawan', compact('title', 'bulan', 'riwayatPresensi'));
         $pdf = Pdf::loadView('admin.laporan.pdf.presensi-semua-karyawan', compact('title', 'bulan', 'riwayatPresensi'));
         return $pdf->stream($title . '.pdf');
+    }
+
+    public function indexAdmin(Request $request)
+    {
+        $title = 'Administrasi Presensi';
+
+        $departemen = Departemen::get();
+
+        $query = DB::table('pengajuan_presensi as p')
+            ->join('karyawan as k', 'k.nik', '=', 'p.nik')
+            ->join('departemen as d', 'k.departemen_id', '=', 'd.id')
+            ->where('p.tanggal_pengajuan', '>=', Carbon::now()->startOfMonth()->format("Y-m-d"))
+            ->where('p.tanggal_pengajuan', '<=', Carbon::now()->endOfMonth()->format("Y-m-d"))
+            ->select('p.*', 'k.nama_lengkap as nama_karyawan', 'd.nama as nama_departemen', 'd.id as id_departemen')
+            ->orderBy('p.tanggal_pengajuan', 'asc');
+
+        if ($request->nik) {
+            $query->where('k.nik', 'LIKE', '%' . $request->nik . '%');
+        }
+        if ($request->karyawan) {
+            $query->where('k.nama_lengkap', 'LIKE', '%' . $request->karyawan . '%');
+        }
+        if ($request->departemen) {
+            $query->where('d.id', $request->departemen);
+        }
+        if ($request->tanggal_awal) {
+            $query->WhereDate('p.tanggal_pengajuan', '>=', Carbon::parse($request->tanggal_awal)->format('Y-m-d'));
+        }
+        if ($request->tanggal_akhir) {
+            $query->WhereDate('p.tanggal_pengajuan', '<=', Carbon::parse($request->tanggal_akhir)->format('Y-m-d'));
+        }
+        if ($request->status) {
+            $query->Where('p.status', $request->status);
+        }
+        if ($request->status_approved) {
+            $query->Where('p.status_approved', $request->status_approved);
+        }
+
+        $pengajuan = $query->paginate(10);
+
+        return view('admin.monitoring-presensi.administrasi-presensi', compact('title', 'pengajuan', 'departemen'));
+    }
+
+    public function persetujuanPresensi(Request $request)
+    {
+        if ($request->ajuan == "terima") {
+            $pengajuan = DB::table('pengajuan_presensi')->where('id', $request->id)->update([
+                'status_approved' => 2
+            ]);
+            if ($pengajuan) {
+                return response()->json(['success' => true, 'message' => 'Pengajuan presensi telah diterima']);
+            } else {
+                return response()->json(['success' => false, 'message' => 'Pengajuan presensi gagal diterima']);
+            }
+
+        } elseif ($request->ajuan == "tolak") {
+            $pengajuan = DB::table('pengajuan_presensi')->where('id', $request->id)->update([
+                'status_approved' => 3
+            ]);
+            if ($pengajuan) {
+                return response()->json(['success' => true, 'message' => 'Pengajuan presensi telah ditolak']);
+            } else {
+                return response()->json(['success' => false, 'message' => 'Pengajuan presensi gagal ditolak']);
+            }
+
+        } elseif ($request->ajuan == "batal") {
+            $pengajuan = DB::table('pengajuan_presensi')->where('id', $request->id)->update([
+                'status_approved' => 1
+            ]);
+            if ($pengajuan) {
+                return response()->json(['success' => true, 'message' => 'Pengajuan presensi telah dibatalkan']);
+            } else {
+                return response()->json(['success' => false, 'message' => 'Pengajuan presensi gagal dibatalkan']);
+            }
+        }
     }
 }
